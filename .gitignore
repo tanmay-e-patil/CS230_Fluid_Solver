@@ -3,3 +3,5 @@
 *.crlf
 *.lf
 solver
+*.pub
+git_bash_rsa

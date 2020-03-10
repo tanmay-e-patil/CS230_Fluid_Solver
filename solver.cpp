@@ -25,16 +25,25 @@ and combine to give us a simulator.*/
 	vector< vector<float> > horizVelocityGrid(xDim+1, vector<float>(yDim, initValue));
 	vector< vector<float> > vertVelocityGrid(xDim, vector<float>(yDim+1, initValue));
 
+	// Used for updating fields ins advect function
+	vector< vector<float> > updatedHorizGrid(xDim+1, vector<float>(yDim, initValue));
+	vector< vector<float> > updatedVertGrid(xDim, vector<float>(yDim+1, initValue));
+
+	/*
+	Used for creating timestep, eventually, don't need for right now
+
 	vector<float>* bottomLeftVel = rightSideVel(horizVelocityGrid, vertVelocityGrid, 0, 0);
 	float maxVel = magnitude(*bottomLeftVel);
 	delete bottomLeftVel;
+	*/
 
 	const float TIME_PER_FRAME = 1 / 15.0;
 	for (int i = 0; i < numFrames; ++i) {
 		t = 0;
 		while (t < TIME_PER_FRAME) {
 			deltaT = 1 / maxVel;
-			// advect(horizVelocityGrid, vertVelocityGrid, xDim, yDim, deltaT);
+
+			advect(horizVelocityGrid, vertVelocityGrid, updatedHorizGrid, updatedVertGrid, xDim, yDim, deltaT);
 	 		// pressure Projection
 	 		// advect free surface
 			t = t + deltaT;

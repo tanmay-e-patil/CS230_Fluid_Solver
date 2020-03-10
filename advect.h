@@ -12,6 +12,19 @@ using namespace std;
 // 	need to bound x_prev with array dims
 // 	update current cell with velocity at X_prev
 
+/*
+	input: float; value to be bounded between 0 and maxSize
+	maxSize: float; maximum bound for input
+
+	Return type: float
+*/
+float bound(float input, float maxSize){
+	// Bounds input between 0 and maxSize, inclusive
+	float zero = 0;
+	input = min(input, maxSize);
+	input = max(input, zero);
+	return input;
+}
 
 /*
 	factor: float&; possibly incorrect interpolation factor
@@ -21,7 +34,7 @@ using namespace std;
 	Alters by reference: factor
 	Return type: vector<float> of size 2
 */
-vector<int> cellLeftOrRight(float &factor, int cell_prev, float prev) {
+vector<int> cellLeftOrRight(float &factor, int cell_prev, float prev, int max) {
 	/*
 	Returns the correct cell indices to use in interpolation.
 	May change factor if prev is to the left/below cell_prev.
@@ -38,43 +51,33 @@ vector<int> cellLeftOrRight(float &factor, int cell_prev, float prev) {
 		cell_left = cell_prev;
 		cell_right = cell_prev + 1;
 	}
-	return vector<int> {cell_left, cell_right};
-}
-
-/*
-	input: float; value to be bounded between 0 and maxSize
-	maxSize: float; maximum bound for input
-
-	Return type: float
-*/
-float bound(float input, float maxSize){
-	// Bounds input between 0 and maxSize, inclusive
-	float zero = 0;
-	input = min(input, maxSize);
-	input = max(input, zero);
-	return input;
+	return vector<int> {bound(cell_left, max), bound(cell_right, max)};
 }
 
 /*
 	horizVelocityGrid: 2D vector of floats; holds vertical horizontal components at 1/2 indices
 	vertVelocityGrid: 2D vector of floats; holds vertical velocity components at 1/2 indices
+	updatedHorizGrid: 2D vector of floats; will hold the updated horizontal velocities
+	updatedVertGrid: 2D vector of floats; will hold the updated vertical velocities
 	xDim: int; number of cells in x direction
 	yDim: int; number of cells in y direction
 	deltaT: float; time step over which we advect the velocity
 	i: integer; index for ith row
 	j: integer; index for jth column
 
-	Alters by reference: horizVelocityGrid and vertVelocityGrid
+	Alters by reference: updatedHorizGrid and updatedVertGrid
 	Return type: void
 */
-void advect(vector< vector<float> > &horizVelocityGrid, vector< vector<float> > &vertVelocityGrid, int xDim, int yDim, float deltaT) {
+void advect(vector< vector<float> > &horizVelocityGrid, vector< vector<float> > &vertVelocityGrid, vector< vector<float> >& updatedHorizGrid, vector< vector<float> >& updatedVertGrid, int xDim, int yDim, float deltaT) {
 	/*
 	Updates the velocity field due to advection.
 	*/
 
+	// updatedHorizGrid = new vector< vector<float> > {xDim+1, vector<float>(yDim, 0)};
+	// updatedVertGrid = new vector< vector<float> > {xDim, vector<float>(yDim+1, 0)};
 	// For all grid cells
-	for (size_t i = xDim; i < xDim; ++i) {
-		for (size_t j = yDim; j < yDim; ++j) {
+	for (size_t i = 0; i < xDim; ++i) {
+		for (size_t j = 0; j < yDim; ++j) {
 			// Get center velocity for (i,j)th cell
 			vector<float>* centerVelocity_n1 = centerVel(horizVelocityGrid, vertVelocityGrid, i, j);
 
@@ -89,18 +92,18 @@ void advect(vector< vector<float> > &horizVelocityGrid, vector< vector<float> > 
 			// Interpolate floating point location with velocities at cell locations
 			float alpha = x_prev - cell_x_prev;
 			float beta = y_prev - cell_y_prev;
-			vector<int> xCellsLeftAndRight = cellLeftOrRight(alpha, cell_x_prev, x_prev);
-			vector<int> yCellsTopAndBottom = cellLeftOrRight(alpha, cell_y_prev, y_prev);
+			vector<int> xCellsLeftAndRight = cellLeftOrRight(alpha, cell_x_prev, x_prev, xDim);
+			vector<int> yCellsTopAndBottom = cellLeftOrRight(alpha, cell_y_prev, y_prev, yDim);
 
 			float horizVelTerm1 = (1-alpha) * horizVelocityGrid.at(xCellsLeftAndRight.at(0)).at(cell_y_prev);
 			float horizVelTerm2 = alpha * horizVelocityGrid.at(xCellsLeftAndRight.at(1)).at(cell_y_prev);
 			// Update horizontal velocity of current cell with interpolated velocity at previous location
-			horizVelocityGrid.at(i).at(j) = horizVelTerm1 + horizVelTerm2;
+			updatedHorizGrid.at(i).at(j) = horizVelTerm1 + horizVelTerm2;
 
 			float vertVelTerm1 = (1-alpha) * vertVelocityGrid.at(cell_x_prev).at(yCellsTopAndBottom.at(0));
 			float vertVelTerm2 = alpha * vertVelocityGrid.at(cell_x_prev).at(yCellsTopAndBottom.at(1));
-			// Update vertical velocitycurrent cell with interpolated velocity at previous location
-			vertVelocityGrid.at(i).at(j) = vertVelTerm1 + vertVelTerm2;
+			// Update vertical velocity of current cell with interpolated velocity at previous location
+			updatedVertGrid.at(i).at(j) = vertVelTerm1 + vertVelTerm2;
 
 			delete centerVelocity_n1;
 		}
