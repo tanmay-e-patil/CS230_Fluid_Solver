@@ -73,8 +73,6 @@ void advect(vector< vector<float> > &horizVelocityGrid, vector< vector<float> > 
 	Updates the velocity field due to advection.
 	*/
 
-	// updatedHorizGrid = new vector< vector<float> > {xDim+1, vector<float>(yDim, 0)};
-	// updatedVertGrid = new vector< vector<float> > {xDim, vector<float>(yDim+1, 0)};
 	// For all grid cells
 	for (size_t i = 0; i < xDim; ++i) {
 		for (size_t j = 0; j < yDim; ++j) {
