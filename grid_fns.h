@@ -2,7 +2,72 @@
 #define __GRIDFUNCTIONS__
 
 #include <vector>
+#include <string>
+#include <fstream>
+#include <iostream>
 using namespace std;
+
+
+/*
+	inputFileName: string; name of input file to be read from
+	Data format: Each row holds space seperated values for that row in toFill.
+		row 0 data
+		row 1 data
+		...
+		row n data
+		---------------------------
+		Ex:
+		---------------------------
+		1.2 1 3.4 3 23 2 ... 3 1
+		3 9 9.3 8 23 0 ... 0 9
+		...
+		4 9.6 3 25 28 2.5 ... 3 6
+
+	Return type: vector<float>*
+*/
+vector<float>* getInputData(string inputFileName) {
+	/*
+	Returns vector holding inputFileName's input data
+	*/
+	ifstream inputFile;
+	string strValue;
+	float fltValue;
+	vector<float>* values = new vector<float>;
+
+	inputFile.open(inputFileName, ios::in);
+	while(inputFile >> strValue) {
+		if (strValue != "\n") {
+			fltValue = stof(strValue);
+			values->push_back(fltValue);
+		}
+	}
+	return values;
+}
+
+/*
+	toFill: 2D vector of floats; holds default values, needs to be initialized
+	inputFileName: string; file name of the input file
+
+	Altered by reference: toFill
+	Return type: void
+*/
+void fillGrid(vector< vector<float> > &toFill, string inputFileName) {
+	/*
+	Gets values from input file, fills toFill with them
+	*/
+	int numRows = toFill.size();
+	int numCols = toFill.at(0).size();
+
+	const vector<float>* inputData = getInputData(inputFileName);
+
+	for(size_t i = 0; i < numRows; ++i) {
+		for (size_t j = 0; j < numCols; ++j) {
+			toFill.at(i).at(j) = inputData->at(i*numCols+j);
+		}
+	}
+
+	delete inputData;
+}
 
 /*
 	pressureGrid: 2D vector of floats; holds pressure values

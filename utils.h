@@ -1,7 +1,10 @@
 #ifndef __UTILS__
 #define __UTILS__
 
+#include "grid_fns.h"
 #include <cmath>
+#include <string>
+#include <vector>
 #include <fstream>
 #include <sstream>
 using namespace std;
@@ -9,12 +12,14 @@ using namespace std;
 /*
 	Return type: void
 */
-void clearOutputFile(string fileName) {
+void clearOutputFile(string fileName, int numFrames) {
 	/*
 	Opens and clears the given fileName for later use.
+	Saves number of frames for use in Unity.
 	*/
 	ofstream outputFile;
 	outputFile.open(fileName, ios::out | ios::trunc);
+	outputFile << numFrames << endl;
 	outputFile.close();
 }
 

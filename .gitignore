@@ -5,3 +5,5 @@
 solver
 *.pub
 git_bash_rsa
+*.txt
+Fluid_Render

@@ -8,10 +8,9 @@
 int main(int argc, char* argv[]){
 /* Below is basic skeleton of a fluid solver. Each function will be implemented,
 and combine to give us a simulator.*/
-	srand(3);
 
 	string fileName = "outputVelocities.txt";
-	int numFrames = 300;
+	int numFrames = 500;
 	int xDim = 32;
 	int yDim = 32;
 
@@ -24,13 +23,16 @@ and combine to give us a simulator.*/
 		xDim = atoi(argv[2]);
 		yDim = atoi(argv[3]);
 	}
-	// Make sure no existing data already in save destination.
-	clearOutputFile(fileName);
+	// Make sure no existing data already in save destination, save number of frames we produce.
+	clearOutputFile(fileName, numFrames);
 
 	// 1. Initialize grids with fluid
 	vector< vector<float> > pressureGrid(xDim, vector<float>(yDim, initValue));
 	vector< vector<float> > horizVelocityGrid(xDim+1, vector<float>(yDim, initValue));
 	vector< vector<float> > vertVelocityGrid(xDim, vector<float>(yDim+1, initValue));
+
+	fillGrid(horizVelocityGrid, "initialHorizVelocities.txt");
+	fillGrid(vertVelocityGrid, "initialVertVelocities.txt");
 
 	// Used for updating fields ins advect function
 	vector< vector<float> > updatedHorizGrid(xDim+1, vector<float>(yDim, initValue));
@@ -41,7 +43,6 @@ and combine to give us a simulator.*/
 	vector<float>* bottomLeftVel = rightSideVel(horizVelocityGrid, vertVelocityGrid, 0, 0);
 	float maxVel = magnitude(*bottomLeftVel);
 	delete bottomLeftVel;
-
 
 	const float TIME_PER_FRAME = 1 / 15.0;
 	for (int i = 0; i < numFrames; ++i) {

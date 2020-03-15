@@ -78,10 +78,9 @@ void advect(vector< vector<float> > &horizVelocityGrid, vector< vector<float> > 
 		for (size_t j = 0; j < yDim; ++j) {
 			// Get center velocity for (i,j)th cell
 			vector<float>* centerVelocity_n1 = centerVel(horizVelocityGrid, vertVelocityGrid, i, j);
-
 			// Trace velocity at (i,j) backwards over timeframe deltaT
-			float x_prev = bound(i - centerVelocity_n1->at(0) * deltaT, xDim);
-			float y_prev = bound(j - centerVelocity_n1->at(1) * deltaT, yDim);
+			float x_prev = bound(i - centerVelocity_n1->at(0) * deltaT, xDim-1);
+			float y_prev = bound(j - centerVelocity_n1->at(1) * deltaT, yDim-1);
 
 			// Get cell of floating point locations
 			int cell_x_prev = round(x_prev);
@@ -92,12 +91,11 @@ void advect(vector< vector<float> > &horizVelocityGrid, vector< vector<float> > 
 			float beta = y_prev - cell_y_prev;
 			vector<int> xCellsLeftAndRight = cellLeftOrRight(alpha, cell_x_prev, x_prev, xDim);
 			vector<int> yCellsTopAndBottom = cellLeftOrRight(alpha, cell_y_prev, y_prev, yDim);
-
 			float horizVelTerm1 = (1-alpha) * horizVelocityGrid.at(xCellsLeftAndRight.at(0)).at(cell_y_prev);
 			float horizVelTerm2 = alpha * horizVelocityGrid.at(xCellsLeftAndRight.at(1)).at(cell_y_prev);
+
 			// Update horizontal velocity of current cell with interpolated velocity at previous location
 			updatedHorizGrid.at(i).at(j) = horizVelTerm1 + horizVelTerm2;
-
 			float vertVelTerm1 = (1-alpha) * vertVelocityGrid.at(cell_x_prev).at(yCellsTopAndBottom.at(0));
 			float vertVelTerm2 = alpha * vertVelocityGrid.at(cell_x_prev).at(yCellsTopAndBottom.at(1));
 			// Update vertical velocity of current cell with interpolated velocity at previous location
