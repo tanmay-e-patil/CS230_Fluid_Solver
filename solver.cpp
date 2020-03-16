@@ -24,7 +24,7 @@ and combine to give us a simulator.*/
 		yDim = atoi(argv[3]);
 	}
 	// Make sure no existing data already in save destination, save number of frames we produce.
-	clearOutputFile(fileName, numFrames);
+	clearOutputFile(fileName, numFrames, xDim, yDim);
 
 	// 1. Initialize grids with fluid
 	vector< vector<float> > pressureGrid(xDim, vector<float>(yDim, initValue));

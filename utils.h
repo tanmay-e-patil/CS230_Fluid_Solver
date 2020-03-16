@@ -10,16 +10,20 @@
 using namespace std;
 
 /*
+	fileName: string; name of file to clear and save info in
+	numFrames: int; number of matrices -1 we'll have
+	xDims: int; number of rows
+	yDims: int; number of cols
 	Return type: void
 */
-void clearOutputFile(string fileName, int numFrames) {
+void clearOutputFile(string fileName, int numFrames, int xDim, int yDim) {
 	/*
 	Opens and clears the given fileName for later use.
 	Saves number of frames for use in Unity.
 	*/
 	ofstream outputFile;
 	outputFile.open(fileName, ios::out | ios::trunc);
-	outputFile << numFrames << endl;
+	outputFile << numFrames << " " << xDim << " " << yDim << endl;
 	outputFile.close();
 }
 
