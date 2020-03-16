@@ -47,11 +47,10 @@ and combine to give us a simulator.*/
 	const float TIME_PER_FRAME = 1 / 15.0;
 	for (int i = 0; i < numFrames; ++i) {
 		t = 0;
+		saveVelocityField(horizVelocityGrid, vertVelocityGrid, xDim, yDim, fileName);
+		deltaT = 1 / 30.0;
 		while (t < TIME_PER_FRAME) {
-			deltaT = 1 / maxVel;
-			saveVelocityField(horizVelocityGrid, vertVelocityGrid, xDim, yDim, fileName);
 			advect(horizVelocityGrid, vertVelocityGrid, updatedHorizGrid, updatedVertGrid, xDim, yDim, deltaT);
-
 			horizVelocityGrid = updatedHorizGrid;
 			vertVelocityGrid = updatedVertGrid;
 	 		// pressure Projection
